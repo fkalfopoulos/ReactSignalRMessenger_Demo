@@ -8,7 +8,9 @@ export default function ConversationListItem(props) {
     shave('.conversation-snippet', 30);
   })
  
-    const { photo, name, text, id } = props.data;     
+    const { photo, name, text, id } = props.data;    
+    
+    console.log(props.data.id);
 
     return (
       <div className="conversation-list-item">
