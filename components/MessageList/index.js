@@ -16,7 +16,9 @@ const _baseUrl = "https://localhost:44321/api/React/GetChat"
 export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
    const [conversations, setConversations] = useState([]);
-  const [query,setConvId] = useState();  
+  const [query,setConvId] = useState('52');  
+
+  
 
   useEffect(() => {          
         FetchData(query);
@@ -159,6 +161,3 @@ export default function MessageList(props) {
       </Fragment>
     );
       }
-    
-      
- 
