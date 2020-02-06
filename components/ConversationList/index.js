@@ -8,14 +8,16 @@ import axios from 'axios';
  
 
 export default function ConversationList(props) {
- 
-  useEffect(() => {
-    
-  },[]) 
- 
-    return (
-     null
-    );
-}
 
+  const [conversations, setConversations] = useState([]);
+  const [id,setConvId] = useState('');  
+  
+  useEffect(() => {             
+      }, []);
+
+   return{
+   
+   }
+  
+  }
 

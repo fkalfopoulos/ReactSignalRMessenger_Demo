@@ -1,6 +1,7 @@
 
 import React, {useEffect, useState, Fragment} from 'react';
 import Compose from '../Compose';
+import useDataApi from 'use-data-api';
 import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
@@ -16,19 +17,23 @@ const _baseUrl = "https://localhost:44321/api/React/GetChat"
 export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
    const [conversations, setConversations] = useState([]);
-  const [query,setConvId] = useState('52');  
+  const [query,setConvId] = useState(null);  
+  const setCurrentConvId = e => { setConvId(e.currentTarget.id); }; 
 
-  
+  useEffect(() => {              
+    FetchData(query)}, [query]
+    );
 
-  useEffect(() => {          
-        FetchData(query);
-      }, [query]);   
-    
    useEffect(() => {          
     getConversations();
-  },[]);
+  },[]);  
+
+  const ClearState = () => {
+      setMessages([])
+  }
 
   const FetchData = () => { 
+    ClearState();
     axios.post(`https://localhost:44321/api/React/GetChat?=${query}`).then((response) => {
       let tempMessages =  response.data.map(data => {
         return {
@@ -60,8 +65,7 @@ export default function MessageList(props) {
     let i = 0;
     let messageCount = messages.length;
     let tempMessages = [];
-    
-    
+
     while (i < messageCount) {
       let previous = messages[i - 1];
       let current = messages[i];
@@ -131,8 +135,8 @@ export default function MessageList(props) {
             <ConversationListItem
               key={conversation.id}
               data={conversation}  
-              id ={conversation.id}    
-              onClick={ () => setConvId(conversation.id)}              
+              id={conversation.id}
+              setCurrentConvId={setCurrentConvId}                                  
              />
           )        
         }      

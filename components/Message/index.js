@@ -6,6 +6,7 @@ export default function Message(props) {
     const {
       data,
       isMine,
+      from,
       startsSequence,
       endsSequence,
       showTimestamp,
