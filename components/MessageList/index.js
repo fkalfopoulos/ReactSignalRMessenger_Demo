@@ -16,10 +16,13 @@ const _baseUrl = "https://localhost:44321/api/React/GetChat"
 
 export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
-   const [conversations, setConversations] = useState([]);
-  const [query,setConvId] = useState(null);  
-  const setCurrentConvId = e => { setConvId(e.currentTarget.id); }; 
+  const [conversations, setConversations] = useState([]);
+  const [query,setConvId] = useState(null);    
+  const setCurrentConvId = e => { setConvId(e.currentTarget.id); console.log(e.currentTarget.id); }; 
 
+  const ClearState = () => {
+    setMessages([])
+  }
   useEffect(() => {              
     FetchData(query)}, [query]
     );
@@ -28,10 +31,7 @@ export default function MessageList(props) {
     getConversations();
   },[]);  
 
-  const ClearState = () => {
-      setMessages([])
-  }
-
+ 
   const FetchData = () => { 
     ClearState();
     axios.post(`https://localhost:44321/api/React/GetChat?=${query}`).then((response) => {
@@ -43,10 +43,9 @@ export default function MessageList(props) {
           timestamp: data.dateSent      
         }
       });      
-        setMessages([...messages, ...tempMessages]);
+        setMessages(tempMessages);
   });
-  }
-  
+  }  
       const getConversations = () => {
         axios.post('https://localhost:44321/api/React/RenderMessages').then(response => { 
             let newConversations = response.data.result.map(result => {
@@ -118,7 +117,7 @@ export default function MessageList(props) {
   }
     return(
       <Fragment> 
-      <div className="scrollable sidebar">
+      <div className="scrollable sidebar">        
         <div className="conversation-list">
         <Toolbar
           title="Messenger"
@@ -154,7 +153,7 @@ export default function MessageList(props) {
           ]}
         />
         <div className="message-list-container">{renderMessages()}</div>
-        <Compose rightItems={[
+        <Compose setCurrentConvId={setCurrentConvId}  id={query}  rightItems={[
           <ToolbarButton key="photo" icon="ion-ios-camera" />,
           <ToolbarButton key="image" icon="ion-ios-image" />,
           <ToolbarButton key="audio" icon="ion-ios-mic" />,

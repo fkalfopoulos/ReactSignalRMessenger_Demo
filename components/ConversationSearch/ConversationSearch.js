@@ -3,14 +3,13 @@ import './ConversationSearch.css';
 import useDataApi from 'use-data-api' ;
 
  const ConversationSearch = (props) => {
-  const [query, setQuery] = useState('foivos');
+  const [query, setQuery] = useState('');
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
     'https://localhost:44321/api/React/LiveUsersSearch?=foivos' ,
     { result: [] },
   );
 
-  console.log({query});
-  console.log(data.result);
+ 
   return ( 
     <Fragment>
       <form
@@ -20,11 +19,10 @@ import useDataApi from 'use-data-api' ;
           );
           event.preventDefault();
         }}
-      >
-        
+      >        
       <div className="conversation-search">
         <input
-          type="text" className="conversation-search-input" placeholder="Search Messages"   value={query}  onChange={event => (event.target.value)} />
+          type="text" className="conversation-search-input" placeholder="Search Messages"  value={query}  onChange={event => (event.target.value)} />
       </div> 
         <button type="submit">Search</button>
       </form>
