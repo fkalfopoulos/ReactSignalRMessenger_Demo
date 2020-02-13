@@ -1,7 +1,6 @@
 
 import React, {useEffect, useState, Fragment} from 'react';
 import Compose from '../Compose';
-import useDataApi from 'use-data-api';
 import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
@@ -18,7 +17,7 @@ export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [query,setConvId] = useState(null);    
-  const setCurrentConvId = e => { setConvId(e.currentTarget.id); console.log(e.currentTarget.id); }; 
+  const setCurrentConvId = e => { setConvId(e.currentTarget.id); console.log(e.currentTarget.id);  }; 
 
   const ClearState = () => {
     setMessages([])
@@ -31,12 +30,13 @@ export default function MessageList(props) {
     getConversations();
   },[]);  
 
- 
+  
   const FetchData = () => { 
     ClearState();
     axios.post(`https://localhost:44321/api/React/GetChat?=${query}`).then((response) => {
       let tempMessages =  response.data.map(data => {
         return {
+          id: data.id,
           author: data.sender.name,      
           receiver:data.receiver.name,
           message: `${data.messageText}`,
@@ -44,6 +44,7 @@ export default function MessageList(props) {
         }
       });      
         setMessages(tempMessages);
+         
   });
   }  
       const getConversations = () => {
@@ -115,7 +116,7 @@ export default function MessageList(props) {
     }       
     return tempMessages;
   }
-    return(
+    return( 
       <Fragment> 
       <div className="scrollable sidebar">        
         <div className="conversation-list">
@@ -135,7 +136,7 @@ export default function MessageList(props) {
               key={conversation.id}
               data={conversation}  
               id={conversation.id}
-              setCurrentConvId={setCurrentConvId}                                  
+              setCurrentConvId={setCurrentConvId}                                              
              />
           )        
         }      
@@ -152,15 +153,11 @@ export default function MessageList(props) {
             <ToolbarButton key="image" icon="ion-ios-image" />
           ]}
         />
+          </div>
         <div className="message-list-container">{renderMessages()}</div>
-        <Compose setCurrentConvId={setCurrentConvId}  id={query}  rightItems={[
-          <ToolbarButton key="photo" icon="ion-ios-camera" />,
-          <ToolbarButton key="image" icon="ion-ios-image" />,
-          <ToolbarButton key="audio" icon="ion-ios-mic" />,
-          <ToolbarButton key="money" icon="ion-ios-card" />,           
-          <ToolbarButton key="emoji" icon="ion-ios-happy" />
-        ]}/>
-      </div>
+        
+        <Compose setCurrentConvId={setCurrentConvId}  id={query} />  
+        
       </Fragment>
     );
       }

@@ -4,7 +4,8 @@ import './SimpleMessage.css';
 export default function Message(props) {
     const {
       data,
-      isMine      
+      isMine,
+      id      
     } = props;   
     
     return (
@@ -14,7 +15,7 @@ export default function Message(props) {
       ]}>        
 
         <div className="bubble-container">
-          <div className="bubble" >
+          <div className="bubble"  >
             { data.message } 
           </div>
         </div>
