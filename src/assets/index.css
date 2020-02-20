@@ -9,6 +9,37 @@ body {
   background: #eeeef0;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+ 
+.app-content {
+  margin-top: 0.5em!important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.app-content .row > [class^="col"] {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: #E5EDF5;
+    border: 1px solid #C9C1D5;
+    color: #5F5F5F;
+}
+
+footer {
+  margin-top: 0.5em!important;
+  text-align: center;
+  color: white;
+  background-color: #535353; 
+}
+
+footer  p {
+  margin-top: 0.8em!important;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

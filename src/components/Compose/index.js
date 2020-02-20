@@ -1,19 +1,22 @@
 
 import { HubConnectionBuilder }  from '@microsoft/signalr';
+ import SimpleMessage from '../SimpleMessage';
  import Message from '../Message';
  import React, { Component, Fragment} from 'react'; 
  import axios from 'axios'; 
+ import moment from 'moment';
  import './Compose.css';
  import '../Message/Message.css'
+ const MY_USER_ID = 'admin';
 
  
 class Compose extends Component {
-  constructor() {
-    super( );
+  constructor(props) {
+    super(props );
    
-    this.state = {
-        messages:[],
+    this.state = {        
         newMessage: '',
+        messages: [],
         hubConnection: null
     }
 }  
@@ -32,56 +35,55 @@ class Compose extends Component {
         .then(() => console.log('Connection started!'))
         .catch(err => console.log('Error while establishing connection :('));     
 
-        this.state.connection.on('ShowSentMessage', (content,id,senderId,receiverId) => {          
-             var arr= [];
-           arr.push(content)
-           this.setState({ messages:arr });
-           console.log(this.state.messages);
+        this.state.connection.on('ShowSentMessage', (content,id,senderId,receiverId,senderName) => {  
+
+          var newmessages = [           
+              content = content,
+              id = id                          
+          ]
+          console.log(newmessages)
+         this.props.setMessages(newmessages); 
      })        
    })    
   }
 
   enterPressed = (event) => {
+    event.preventDefault();
     var code = event.keyCode || event.which;
     if(code === 13) { this.handleSend();
     } 
   } 
   
   handleSend = (event) => { 
-    event.preventDefault();
-       const messageViewModel = {
-       receiverId: this.props.id,
+         event.preventDefault();
+        const messageViewModel = 
+        {
+        receiverId: this.props.id,
         content: this.state.newMessage
-    }     
+        }     
     axios.post('https://localhost:44321/api/React/SendMessage', messageViewModel).then((response) => {          
     console.log(response.data);
     const msgViewModel={
       receiverId: response.data.receiverId,
-      content: response.data.content,
+      message: response.data.content,
       senderId : response.data.senderId,
-      id: response.data.id
+      id: response.data.id,
+      senderName : response.data.senderName
     }
     console.log(msgViewModel);
+    
     this.state.connection
-      .invoke("SendMessage", msgViewModel.content, msgViewModel.receiverId, msgViewModel.senderId, msgViewModel.id)
+      .invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId, msgViewModel.senderId, msgViewModel.id, msgViewModel.senderName)
       .catch(err => console.error(err));
   })  
-      this.setState({message: ''}) 
+  
 }
 
+ 
   handleMessageChange = e => {
   this.setState({newMessage: e.target.value});
   }
-
-  RenderMessages = () =>{
-    var i =0;
-    let msgs = this.state.messages.map((message,i) =>  
-      <Message  key={i} data={message} />   , 
-    
-    i +=1 )
-    return msgs;
-  }
-
+  
   render() {
     return (
       <Fragment> 
@@ -93,18 +95,15 @@ class Compose extends Component {
                         placeholder="Type a message, @name"     
                         value={this.state.newMessage}
                         onChange={this.handleMessageChange}     
-                        onKeyPress={this.enterPressed.bind(this)}                                          
+                                                               
                      /> 
-                    <button type="submit" className="btn btn-warning"  >Send</button>        
-                    </form>
-                        
+                    <button type="submit" className="btn btn-warning" >Send</button>        
+                    </form>                         
      </div> 
-     <div className="message-list-container">  { this.state.messages.map((message, index) => (
-          <Message key={index} data={message}/>  ))}
-          </div>
      </Fragment>
     )
   }
-} 
+}
+ 
 export default Compose;
 

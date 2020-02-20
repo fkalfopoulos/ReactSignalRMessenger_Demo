@@ -1,24 +1,22 @@
 import React from 'react';
 import './SimpleMessage.css';
 
-export default function Message(props) {
-    const {
-      data,
-      isMine,
-      id      
-    } = props;   
-    
+const SimpleMessage = ({data}) => {
+ 
+
     return (
       <div className={[
         'message',
-        `${isMine ? 'mine' : ''}`        
+        `${data.isMine ? 'mine' : ''}`        
       ]}>        
 
         <div className="bubble-container">
-          <div className="bubble"  >
-            { data.message } 
+          <div className="bubble" id={data.id}  >
+            {data.content} 
           </div>
         </div>
       </div>
     );
 }
+
+export default SimpleMessage;

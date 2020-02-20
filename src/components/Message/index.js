@@ -7,6 +7,7 @@ export default function Message(props) {
       data,
       isMine,
       from,
+      id,
       startsSequence,
       endsSequence,
       showTimestamp,
@@ -29,8 +30,8 @@ export default function Message(props) {
         }
 
         <div className="bubble-container">
-          <div className="bubble" title={friendlyTimestamp}>
-            { data.message } 
+          <div className="bubble" title={id} >
+            { data.content } 
           </div>
         </div>
       </div>

@@ -11,43 +11,49 @@ import ConversationListItem from '../ConversationListItem';
 import './MessageList.css';
 import '../ConversationList/ConversationList.css'
 const MY_USER_ID = 'admin';
-const _baseUrl = "https://localhost:44321/api/React/GetChat"
 
 export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [query,setConvId] = useState(null);    
   const setCurrentConvId = e => { setConvId(e.currentTarget.id); console.log(e.currentTarget.id);  }; 
-
-  const ClearState = () => {
-    setMessages([])
-  }
+   
+  
   useEffect(() => {              
-    FetchData(query)}, [query]
+    FetchData(query)}, [query],
+        
     );
 
    useEffect(() => {          
     getConversations();
   },[]);  
-
   
-  const FetchData = () => { 
-    ClearState();
+
+  const ClearState = () => {
+    setMessages([])
+}
+const ClearSearch = () => {
+  setConversations([])
+}
+
+   const FetchData = () => { 
+    ClearState();   
+    
     axios.post(`https://localhost:44321/api/React/GetChat?=${query}`).then((response) => {
-      let tempMessages =  response.data.map(data => {
+      let tempMessage =  response.data.map(data => {
         return {
           id: data.id,
           author: data.sender.name,      
           receiver:data.receiver.name,
-          message: `${data.messageText}`,
+          content: `${data.messageText}`,
           timestamp: data.dateSent      
         }
       });      
-        setMessages(tempMessages);
-         
+        setMessages(tempMessage);         
   });
   }  
-      const getConversations = () => {
+  
+      const getConversations = () => {         
         axios.post('https://localhost:44321/api/React/RenderMessages').then(response => { 
             let newConversations = response.data.result.map(result => {
               return {
@@ -57,7 +63,7 @@ export default function MessageList(props) {
                 id: `${result.id}`            
               }
             }); 
-            setConversations([...conversations, ...newConversations]) 
+            setConversations(newConversations) 
         });
       }  
       
@@ -65,6 +71,7 @@ export default function MessageList(props) {
     let i = 0;
     let messageCount = messages.length;
     let tempMessages = [];
+   
 
     while (i < messageCount) {
       let previous = messages[i - 1];
@@ -109,6 +116,7 @@ export default function MessageList(props) {
           endsSequence={endsSequence}
           showTimestamp={showTimestamp}
           data={current}
+          id={current.id}
         />
       );
       // Proceed to the next message.
@@ -129,7 +137,7 @@ export default function MessageList(props) {
             <ToolbarButton key="add" icon="ion-ios-add-circle-outline" />
           ]}
         />
-        <ConversationSearch />
+        <ConversationSearch ClearSearch={ClearSearch} setCurrentConvId={setCurrentConvId} FetchData={FetchData} />
         {
           conversations.map(conversation =>
             <ConversationListItem
@@ -153,10 +161,17 @@ export default function MessageList(props) {
             <ToolbarButton key="image" icon="ion-ios-image" />
           ]}
         />
-          </div>
+        
         <div className="message-list-container">{renderMessages()}</div>
         
-        <Compose setCurrentConvId={setCurrentConvId}  id={query} />  
+        <Compose setCurrentConvId={setCurrentConvId}  id={query} renderMessages={renderMessages} setMessages={setMessages}  rightItems={[
+          <ToolbarButton key="photo" icon="ion-ios-camera" />,
+          <ToolbarButton key="image" icon="ion-ios-image" />,
+          
+          <ToolbarButton key="emoji" icon="ion-ios-happy" />
+        ]}/>
+      
+      </div>
         
       </Fragment>
     );
