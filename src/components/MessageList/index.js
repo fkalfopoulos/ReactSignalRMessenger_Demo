@@ -26,6 +26,11 @@ class  MessageList extends React.Component {
     componentDidUpdate(prevProps, prevState) {       
       if (prevState.query !== this.state.query) {
         this.FetchData(this.state.query)    }
+
+        if (prevState.messages !== this.state.messages)
+        {
+          this.renderMessages();
+        }
     }    
     
    componentDidMount = () => {            
@@ -40,11 +45,11 @@ class  MessageList extends React.Component {
   setCurrentConvId = e => {
     this.setState({query:e.currentTarget.id}); console.log(this.state.query);  }; 
 
-    addMessageToState = newmessage => {     
-      console.log(newmessage);
+    addMessageToState = message => {     debugger;      
       this.setState(previous => ({
-        messages: [...previous.messages, newmessage]
+        messages: [...previous.messages, message]
       }));
+      console.log(this.state.messages);
     }
     
     FetchData = () => { 
@@ -118,6 +123,7 @@ class  MessageList extends React.Component {
           endsSequence = false;
         }
       }
+      debugger;
       tempMessages.push(
         <Message
           key={i}

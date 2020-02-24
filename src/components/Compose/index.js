@@ -6,7 +6,7 @@ import { HubConnectionBuilder }  from '@microsoft/signalr';
  import axios from 'axios'; 
  import moment from 'moment';
  import './Compose.css';
- import '../Message/Message.css'
+ import '../Message/Message.css' 
  const MY_USER_ID = 'admin';
 
  
@@ -36,9 +36,12 @@ class Compose extends Component {
         .catch(err => console.log('Error while establishing connection :('));     
 
         this.state.connection.on('ShowSentMessage', (content,id,senderId,receiverId,senderName) => {  
-                             
-        
-         this.props.addMessageToState(content);
+       const message =     {
+          content : content,
+          id : receiverId,   
+          author:senderName 
+          }    
+         this.props.addMessageToState(message);
      })        
    })    
   }
