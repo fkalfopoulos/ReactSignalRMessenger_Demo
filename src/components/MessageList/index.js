@@ -12,34 +12,44 @@ import './MessageList.css';
 import '../ConversationList/ConversationList.css'
 const MY_USER_ID = 'admin';
 
-export default function MessageList(props) {
-  const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [query,setConvId] = useState(null);    
-  const setCurrentConvId = e => { setConvId(e.currentTarget.id); console.log(e.currentTarget.id);  }; 
-   
-  
-  useEffect(() => {              
-    FetchData(query)}, [query],
-        
-    );
-
-   useEffect(() => {          
-    getConversations();
-  },[]);  
-  
-
-  const ClearState = () => {
-    setMessages([])
-}
-const ClearSearch = () => {
-  setConversations([])
-}
-
-   const FetchData = () => { 
-    ClearState();   
+class  MessageList extends React.Component {
+  state = {
+  message:'',
+  messages:[],
+  conversation:'',
+  conversations:[],
+  query:''
+}     
+     componentDidMount = () => {          
+     this.FetchData(this.state.query)
+    }      
+    componentDidUpdate(prevProps, prevState) {       
+      if (prevState.query !== this.state.query) {
+        this.FetchData(this.state.query)    }
+    }    
     
-    axios.post(`https://localhost:44321/api/React/GetChat?=${query}`).then((response) => {
+   componentDidMount = () => {            
+    this.getConversations();
+  }   
+   ClearState = () => {
+    this.setState({messages:[]});   }    
+    
+    ClearSearch = () => {
+   this.setState({conversations:[]});
+  }
+  setCurrentConvId = e => {
+    this.setState({query:e.currentTarget.id}); console.log(this.state.query);  }; 
+
+    addMessageToState = newmessage => {     
+      console.log(newmessage);
+      this.setState(previous => ({
+        messages: [...previous.messages, newmessage]
+      }));
+    }
+    
+    FetchData = () => { 
+    this.ClearState();        
+    axios.post(`https://localhost:44321/api/React/GetChat?=${this.state.query}`).then((response) => {
       let tempMessage =  response.data.map(data => {
         return {
           id: data.id,
@@ -49,11 +59,11 @@ const ClearSearch = () => {
           timestamp: data.dateSent      
         }
       });      
-        setMessages(tempMessage);         
-  });
-  }  
-  
-      const getConversations = () => {         
+        this.setState({messages: tempMessage});         
+  }); 
+}
+
+        getConversations = () => {         
         axios.post('https://localhost:44321/api/React/RenderMessages').then(response => { 
             let newConversations = response.data.result.map(result => {
               return {
@@ -63,20 +73,20 @@ const ClearSearch = () => {
                 id: `${result.id}`            
               }
             }); 
-            setConversations(newConversations) 
+            this.setState({conversations: newConversations}) 
         });
       }  
       
-  const renderMessages = () => {
+   renderMessages = () => {
     let i = 0;
-    let messageCount = messages.length;
+    let messageCount =  this.state.messages.length;
     let tempMessages = [];
    
-
+   
     while (i < messageCount) {
-      let previous = messages[i - 1];
-      let current = messages[i];
-      let next = messages[i + 1];
+      let previous = this.state.messages[i - 1];
+      let current = this.state.messages[i];
+      let next = this.state.messages[i + 1];
       let isMine = current.author === MY_USER_ID;
       let currentMoment = moment(current.timestamp);
       let prevBySameAuthor = false;
@@ -123,56 +133,61 @@ const ClearSearch = () => {
       i += 1;
     }       
     return tempMessages;
-  }
-    return( 
-      <Fragment> 
-      <div className="scrollable sidebar">        
-        <div className="conversation-list">
-        <Toolbar
-          title="Messenger"
-          leftItems={[
-            <ToolbarButton key="cog" icon="ion-ios-cog" />
-          ]}
-          rightItems={[
-            <ToolbarButton key="add" icon="ion-ios-add-circle-outline" />
-          ]}
-        />
-        <ConversationSearch ClearSearch={ClearSearch} setCurrentConvId={setCurrentConvId} FetchData={FetchData} />
-        {
-          conversations.map(conversation =>
-            <ConversationListItem
-              key={conversation.id}
-              data={conversation}  
-              id={conversation.id}
-              setCurrentConvId={setCurrentConvId}                                              
-             />
-          )        
-        }      
-      </div>
-</div> 
-      <div className="message-list">
-        <Toolbar
-          title="Conversation Title"
-          rightItems={[
-            <ToolbarButton key="info" icon="ion-ios-information-circle-outline"   />,
-            <ToolbarButton key="video" icon="ion-ios-videocam" />,
-            <ToolbarButton key="phone" icon="ion-ios-call" />,
-            <ToolbarButton key="photo" icon="ion-ios-camera" />,
-            <ToolbarButton key="image" icon="ion-ios-image" />
-          ]}
-        />
-        
-        <div className="message-list-container">{renderMessages()}</div>
-        
-        <Compose setCurrentConvId={setCurrentConvId}  id={query} renderMessages={renderMessages} setMessages={setMessages}  rightItems={[
-          <ToolbarButton key="photo" icon="ion-ios-camera" />,
-          <ToolbarButton key="image" icon="ion-ios-image" />,
+  }    
+      render()  
+      { 
+      return (
+        <Fragment> 
+        <div className="scrollable sidebar">        
+          <div className="conversation-list">
+          <Toolbar
+            title="Messenger"
+            leftItems={[
+              <ToolbarButton key="cog" icon="ion-ios-cog" />
+            ]}
+            rightItems={[
+              <ToolbarButton key="add" icon="ion-ios-add-circle-outline" />
+            ]}
+          />
+          <ConversationSearch ClearSearch={this.ClearSearch} setCurrentConvId={this.setCurrentConvId} FetchData={this.FetchData} />
+          {
+            this.state.conversations.map(conversation =>
+              <ConversationListItem
+                key={conversation.id}
+                data={conversation}  
+                id={conversation.id}
+                setCurrentConvId={this.setCurrentConvId}                                              
+               />
+            )        
+          }      
+        </div>
+  </div> 
+        <div className="message-list">
+          <Toolbar
+            title="Conversation Title"
+            rightItems={[
+              <ToolbarButton key="info" icon="ion-ios-information-circle-outline"   />,
+              <ToolbarButton key="video" icon="ion-ios-videocam" />,
+              <ToolbarButton key="phone" icon="ion-ios-call" />,
+              <ToolbarButton key="photo" icon="ion-ios-camera" />,
+              <ToolbarButton key="image" icon="ion-ios-image" />
+            ]}
+          />
           
-          <ToolbarButton key="emoji" icon="ion-ios-happy" />
-        ]}/>
-      
-      </div>
+          <div className="message-list-container">{this.renderMessages()}</div>
+          
+          <Compose setCurrentConvId={this.setCurrentConvId}  id={this.state.query} renderMessages={this.renderMessages} addMessageToState={this.addMessageToState}  rightItems={[
+            <ToolbarButton key="photo" icon="ion-ios-camera" />,
+            <ToolbarButton key="image" icon="ion-ios-image" />,            
+            <ToolbarButton key="emoji" icon="ion-ios-happy" />
+          ]}/>
         
-      </Fragment>
-    );
+        </div>
+          
+        </Fragment>
+      )
       }
+    }
+  
+   
+      export default MessageList;

@@ -36,13 +36,9 @@ class Compose extends Component {
         .catch(err => console.log('Error while establishing connection :('));     
 
         this.state.connection.on('ShowSentMessage', (content,id,senderId,receiverId,senderName) => {  
-
-          var newmessages = [           
-              content = content,
-              id = id                          
-          ]
-          console.log(newmessages)
-         this.props.setMessages(newmessages); 
+                             
+        
+         this.props.addMessageToState(content);
      })        
    })    
   }
@@ -62,7 +58,7 @@ class Compose extends Component {
         content: this.state.newMessage
         }     
     axios.post('https://localhost:44321/api/React/SendMessage', messageViewModel).then((response) => {          
-    console.log(response.data);
+     
     const msgViewModel={
       receiverId: response.data.receiverId,
       message: response.data.content,
@@ -70,16 +66,13 @@ class Compose extends Component {
       id: response.data.id,
       senderName : response.data.senderName
     }
-    console.log(msgViewModel);
-    
+      
     this.state.connection
       .invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId, msgViewModel.senderId, msgViewModel.id, msgViewModel.senderName)
       .catch(err => console.error(err));
-  })  
-  
-}
-
- 
+      this.setState({newMessage: ''});  
+  })    
+} 
   handleMessageChange = e => {
   this.setState({newMessage: e.target.value});
   }
@@ -94,12 +87,12 @@ class Compose extends Component {
                         className="compose-input"
                         placeholder="Type a message, @name"     
                         value={this.state.newMessage}
-                        onChange={this.handleMessageChange}     
-                                                               
+                        onChange={this.handleMessageChange}                                                                    
                      /> 
                     <button type="submit" className="btn btn-warning" >Send</button>        
                     </form>                         
-     </div> 
+     </div>      
+     
      </Fragment>
     )
   }
