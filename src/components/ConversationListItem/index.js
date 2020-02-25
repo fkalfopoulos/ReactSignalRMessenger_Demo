@@ -13,7 +13,7 @@ export default function ConversationListItem(props) {
       <div className="conversation-list-item" id={props.id} onClick={props.setCurrentConvId} >
         <img className="conversation-photo" src={photo} alt=""  />
         <div className="conversation-info" >
-          <h1 className="conversation-title">{name}{id}</h1>
+          <h1 className="conversation-title">{name}</h1>
           <p className="conversation-snippet">{ text }</p>      
         </div>
       </div>

@@ -1,10 +1,7 @@
 
 import { HubConnectionBuilder }  from '@microsoft/signalr';
- import SimpleMessage from '../SimpleMessage';
- import Message from '../Message';
  import React, { Component, Fragment} from 'react'; 
  import axios from 'axios'; 
- import moment from 'moment';
  import './Compose.css';
  import '../Message/Message.css' 
  const MY_USER_ID = 'admin';
@@ -23,6 +20,9 @@ class Compose extends Component {
   componentDidMount = () => {   
    this.InitConnection();
   }
+  getId = () => {
+    return localStorage.getItem('userId');
+  }
   
   InitConnection = () =>{
     const connection = new HubConnectionBuilder()
@@ -35,11 +35,13 @@ class Compose extends Component {
         .then(() => console.log('Connection started!'))
         .catch(err => console.log('Error while establishing connection :('));     
 
-        this.state.connection.on('ShowSentMessage', (content,id,senderId,receiverId,senderName) => {  
+        this.state.connection.on('ShowSentMessage', (content,senderId,id,receiverId,senderName, timestamp) => {  
        const message =     {
           content : content,
           id : receiverId,   
-          author:senderName 
+          author:senderName ,
+          senderId : senderId,
+          timestamp: timestamp
           }    
          this.props.addMessageToState(message);
      })        
@@ -58,7 +60,8 @@ class Compose extends Component {
         const messageViewModel = 
         {
         receiverId: this.props.id,
-        content: this.state.newMessage
+        content: this.state.newMessage,
+        senderId: this.getId()
         }     
     axios.post('https://localhost:44321/api/React/SendMessage', messageViewModel).then((response) => {          
      
@@ -67,13 +70,26 @@ class Compose extends Component {
       message: response.data.content,
       senderId : response.data.senderId,
       id: response.data.id,
-      senderName : response.data.senderName
+      senderName : response.data.senderName,
+      timestamp: response.data.timestamp
     }
+    console.log(msgViewModel);
       
-    this.state.connection
-      .invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId, msgViewModel.senderId, msgViewModel.id, msgViewModel.senderName)
+
+    this.state.connection.invoke('RegisterUser', this.getId()).catch(err => console.error(err));
+      this.state.connection.invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId,  msgViewModel.id, msgViewModel.senderId, msgViewModel.senderName, msgViewModel.timestamp)
       .catch(err => console.error(err));
       this.setState({newMessage: ''});  
+      this.connection.on("ReceiveMessage", (content , receiverId , MessageID , senderId, senderName, timestamp) => {  
+      const message =     {
+        content : content,
+        id : receiverId,   
+        author:senderName ,
+        senderId : senderId,
+        timestamp: timestamp
+        }    
+       this.props.addMessageToState(message);
+   })        
   })    
 } 
   handleMessageChange = e => {

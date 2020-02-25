@@ -33,6 +33,7 @@ export default function Message(props) {
           <div className="bubble" title={id} >
             { data.content } 
           </div>
+          <span className="check" id="check" style={{display:'none'}} value={id}><input type="checkbox" /></span>
         </div>
       </div>
     );

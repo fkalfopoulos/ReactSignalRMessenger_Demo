@@ -13,26 +13,32 @@ import '../ConversationList/ConversationList.css'
 const MY_USER_ID = 'admin';
 
 class  MessageList extends React.Component {
-  state = {
+  constructor(props) {
+    super(props ); 
+  this.state = {
   message:'',
   messages:[],
   conversation:'',
   conversations:[],
-  query:''
+  query:'' 
 }     
-     componentDidMount = () => {          
+  }
+     componentDidMount = () => {        
+       
      this.FetchData(this.state.query)
     }      
+
+    getUsername = () => {
+      return localStorage.getItem('username');
+  }
+
+  getId = () => {
+    return localStorage.getItem('userId');
+  }
     componentDidUpdate(prevProps, prevState) {       
       if (prevState.query !== this.state.query) {
-        this.FetchData(this.state.query)    }
-
-        if (prevState.messages !== this.state.messages)
-        {
-          this.renderMessages();
-        }
-    }    
-    
+        this.FetchData(this.state.query)    }       
+    }        
    componentDidMount = () => {            
     this.getConversations();
   }   
@@ -42,10 +48,12 @@ class  MessageList extends React.Component {
     ClearSearch = () => {
    this.setState({conversations:[]});
   }
-  setCurrentConvId = e => {
-    this.setState({query:e.currentTarget.id}); console.log(this.state.query);  }; 
 
-    addMessageToState = message => {     debugger;      
+  setCurrentConvId = e => {
+    this.setState({query:e.currentTarget.id}); console.log(this.state.query); 
+    }; 
+
+    addMessageToState = message => {       
       this.setState(previous => ({
         messages: [...previous.messages, message]
       }));
@@ -69,7 +77,7 @@ class  MessageList extends React.Component {
 }
 
         getConversations = () => {         
-        axios.post('https://localhost:44321/api/React/RenderMessages').then(response => { 
+        axios.post(`https://localhost:44321/api/React/RenderMessages?=${this.getId()}`).then(response => { 
             let newConversations = response.data.result.map(result => {
               return {
                 photo: result.imageSrc,
@@ -123,7 +131,7 @@ class  MessageList extends React.Component {
           endsSequence = false;
         }
       }
-      debugger;
+      
       tempMessages.push(
         <Message
           key={i}
@@ -141,7 +149,8 @@ class  MessageList extends React.Component {
     return tempMessages;
   }    
       render()  
-      { 
+      {  
+      
       return (
         <Fragment> 
         <div className="scrollable sidebar">        
@@ -180,7 +189,8 @@ class  MessageList extends React.Component {
             ]}
           />
           
-          <div className="message-list-container">{this.renderMessages()}</div>
+          <div className="message-list-container"> <h3>{this.props.userId}</h3>  
+            {this.renderMessages()}</div>
           
           <Compose setCurrentConvId={this.setCurrentConvId}  id={this.state.query} renderMessages={this.renderMessages} addMessageToState={this.addMessageToState}  rightItems={[
             <ToolbarButton key="photo" icon="ion-ios-camera" />,
