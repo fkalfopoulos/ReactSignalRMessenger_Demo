@@ -23,9 +23,8 @@ class  MessageList extends React.Component {
   query:'' 
 }     
   }
-     componentDidMount = () => {        
-       
-     this.FetchData(this.state.query)
+     componentDidMount = () => {               
+     this.FetchMessages(this.state.query);
     }      
 
     getUsername = () => {
@@ -37,7 +36,7 @@ class  MessageList extends React.Component {
   }
     componentDidUpdate(prevProps, prevState) {       
       if (prevState.query !== this.state.query) {
-        this.FetchData(this.state.query)    }       
+        this.FetchMessages(this.state.query)    }       
     }        
    componentDidMount = () => {            
     this.getConversations();
@@ -60,9 +59,12 @@ class  MessageList extends React.Component {
       console.log(this.state.messages);
     }
     
-    FetchData = () => { 
+    FetchMessages = () => { 
     this.ClearState();        
-    axios.post(`https://localhost:44321/api/React/GetChat?=${this.state.query}`).then((response) => {
+    let userId ={ userId : this.getId()
+    } 
+    console.log(userId);
+    axios.post(`https://localhost:44321/api/React/GetChat?=${this.state.query}`, userId).then((response) => {
       let tempMessage =  response.data.map(data => {
         return {
           id: data.id,
@@ -192,7 +194,8 @@ class  MessageList extends React.Component {
           <div className="message-list-container"> <h3>{this.props.userId}</h3>  
             {this.renderMessages()}</div>
           
-          <Compose setCurrentConvId={this.setCurrentConvId}  id={this.state.query} renderMessages={this.renderMessages} addMessageToState={this.addMessageToState}  rightItems={[
+          <Compose setCurrentConvId={this.setCurrentConvId}  id={this.state.query} renderMessages={this.renderMessages} addMessageToState={this.addMessageToState} 
+           rightItems={[
             <ToolbarButton key="photo" icon="ion-ios-camera" />,
             <ToolbarButton key="image" icon="ion-ios-image" />,            
             <ToolbarButton key="emoji" icon="ion-ios-happy" />
@@ -203,7 +206,5 @@ class  MessageList extends React.Component {
         </Fragment>
       )
       }
-    }
-  
-   
+    } 
       export default MessageList;

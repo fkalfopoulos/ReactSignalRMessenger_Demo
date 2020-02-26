@@ -9,8 +9,7 @@ const avatar = 'https://localhost:44321/content/avatar.png';
 
  const ConversationSearch = ({ClearSearch, setCurrentConvId}) => {
   const [searchString, setSearchString] = useState('');
-  const [searchResults, setSearchResult] = useState([]);
-   
+  const [searchResults, setSearchResult] = useState([]);   
   const [loading, setLoading] = useState(true);   ;
   const [errorMessage, setErrorMessage] = useState(null);  
 
@@ -20,7 +19,10 @@ const avatar = 'https://localhost:44321/content/avatar.png';
     const FetchSearchData = () =>
     {           
        ClearSearch();
-        axios.post(`https://localhost:44321/api/React/LiveUsersSearch?=${searchString}`).then((response) => {  
+       let SearchModel = {
+         id : Getuser()
+       }
+        axios.post(`https://localhost:44321/api/React/LiveUsersSearch?=${searchString}`, SearchModel).then((response) => {  
           console.log(response.data);  
         let temp =  response.data.result.map(result => {           
           return  { 
@@ -36,7 +38,12 @@ const avatar = 'https://localhost:44321/content/avatar.png';
       }; 
     } 
         )}
+ 
 
+const Getuser = () =>
+{
+  return localStorage.getItem('userId');
+}
 
 const initialState = () => {
   try{
@@ -55,18 +62,9 @@ const initialState = () => {
           console.log(e);
       }
   }  
- 
 
   const HandleSearchInput = (e) => {
-    setSearchString(e.target.value)}
-   
-  
-  const ResetString=() => {
-    setSearchString('');
-  }   
-  const ResetResult =() => {
-    setSearchResult([]);
-  }
+    setSearchString(e.target.value)}   
  
   return ( 
     <Fragment>

@@ -35,13 +35,12 @@ class Compose extends Component {
         .then(() => console.log('Connection started!'))
         .catch(err => console.log('Error while establishing connection :('));     
 
-        this.state.connection.on('ShowSentMessage', (content,senderId,id,receiverId,senderName, timestamp) => {  
+        this.state.connection.on('ShowSentMessage', (content,senderId,id,receiverId,senderName) => {  
        const message =     {
           content : content,
           id : receiverId,   
           author:senderName ,
-          senderId : senderId,
-          timestamp: timestamp
+          senderId : senderId           
           }    
          this.props.addMessageToState(message);
      })        
@@ -71,23 +70,25 @@ class Compose extends Component {
       senderId : response.data.senderId,
       id: response.data.id,
       senderName : response.data.senderName,
-      timestamp: response.data.timestamp
+      
     }
-    console.log(msgViewModel);
+     
       
 
     this.state.connection.invoke('RegisterUser', this.getId()).catch(err => console.error(err));
-      this.state.connection.invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId,  msgViewModel.id, msgViewModel.senderId, msgViewModel.senderName, msgViewModel.timestamp)
+      this.state.connection.invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId,  msgViewModel.id, msgViewModel.senderId, msgViewModel.senderName)
       .catch(err => console.error(err));
       this.setState({newMessage: ''});  
-      this.connection.on("ReceiveMessage", (content , receiverId , MessageID , senderId, senderName, timestamp) => {  
+
+      this.state.connection.on("ReceiveMessage", (content , receiverId , MessageID , senderId, senderName) => {  
       const message =     {
         content : content,
         id : receiverId,   
         author:senderName ,
-        senderId : senderId,
-        timestamp: timestamp
+        senderId : senderId       
         }    
+        console.log(message);
+        console.log('here');
        this.props.addMessageToState(message);
    })        
   })    
@@ -110,8 +111,7 @@ class Compose extends Component {
                      /> 
                     <button type="submit" className="btn btn-warning" >Send</button>        
                     </form>                         
-     </div>      
-     
+     </div>           
      </Fragment>
     )
   }
