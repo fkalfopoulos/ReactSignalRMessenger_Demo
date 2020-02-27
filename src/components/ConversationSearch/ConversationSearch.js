@@ -1,29 +1,36 @@
  
-import React , {Fragment, useState, useEffect} from 'react';
+import React , {Fragment} from 'react';
 import './ConversationSearch.css';
 import axios from'axios';
 import ConversationListItem from '../ConversationListItem';
 const Api_URl = 'https://localhost:44321/api/react/LiveUsersSearch';
 const avatar = 'https://localhost:44321/content/avatar.png';
+ 
 
+class ConversationSearch extends React.Component {
+  constructor(props) {
+   super(props ); 
+  this.state = {
+  searchString:'',
+  searchResults:[]   
+}     
+  }
+     componentDidMount = () => {               
+     this.FetchSearchData(this.state.searchString);
+    }      
 
- const ConversationSearch = ({ClearSearch, setCurrentConvId}) => {
-  const [searchString, setSearchString] = useState('');
-  const [searchResults, setSearchResult] = useState([]);   
-  const [loading, setLoading] = useState(true);   ;
-  const [errorMessage, setErrorMessage] = useState(null);  
-
-  useEffect(() => {
-    FetchSearchData(searchString)}, [searchString]);
-  
-    const FetchSearchData = () =>
+    componentDidUpdate(prevProps, prevState) {       
+      if (prevState.searchString !== this.state.searchString) {
+        this.FetchSearchData(this.state.searchString)    }       
+    }        
+ 
+    FetchSearchData = () =>
     {           
-       ClearSearch();
-       let SearchModel = {
-         id : Getuser()
-       }
-        axios.post(`https://localhost:44321/api/React/LiveUsersSearch?=${searchString}`, SearchModel).then((response) => {  
-          console.log(response.data);  
+       this.props.ClearSearch();
+       let SearchModel = { id : this.Getuser() }
+
+        axios.post(`https://localhost:44321/api/React/LiveUsersSearch?=${this.state.searchString}`, SearchModel).then((response) => {  
+          
         let temp =  response.data.result.map(result => {           
           return  { 
             photo: `${avatar}`,               
@@ -31,63 +38,44 @@ const avatar = 'https://localhost:44321/content/avatar.png';
             id: `${result.id}`             
           }       
         })
-        console.log(temp);
-       setSearchResult(temp);     
-       if(searchString === null)  {
-        initialState();
-      }; 
-    } 
-        )}
- 
-
-const Getuser = () =>
-{
-  return localStorage.getItem('userId');
-}
-
-const initialState = () => {
-  try{
-    axios.post('https://localhost:44321/api/React/RenderMessages').then(response => { 
-      let newConversations = response.data.result.map(result => {
-        return {
-          photo: result.imageSrc,
-          name: `${result.name}`,         
-          id: `${result.id}`            
-        }});
-        setSearchResult(newConversations);
-        console.log('ihamafmafma');
-      }); 
-    }
-      catch(e) {
-          console.log(e);
+        
+       this.setState({searchResults:temp});   
+       
+      
+        });
       }
-  }  
+   
+   Getuser = () => 
+   {  return localStorage.getItem('userId');  } 
 
-  const HandleSearchInput = (e) => {
-    setSearchString(e.target.value)}   
- 
+    HandleSearchInput = e => { this.setState({searchString: e.target.value});
+  }
+
+    render()
+{
   return ( 
     <Fragment>
       <form >        
       <div className="conversation-search">
         <input
-          type="text" className="conversation-search-input" placeholder="Search Messages"  value={searchString}  onChange={HandleSearchInput}   />
+          type="text" className="conversation-search-input" placeholder="Search Messages"  value={this.state.searchString}  onChange={this.HandleSearchInput}   />
       </div>         
       </form>   
-      <div className="conversation-list">  {searchResults.map(searchResult => 
+      <div className="conversation-list">  {this.state.searchResults.map(searchResult => 
       <ConversationListItem
         key={searchResult.id}
         data={searchResult}  
         id={searchResult.id}
         photo= {searchResult.photo}
-        setCurrentConvId={setCurrentConvId}                                              
+        setCurrentConvId={this.props.setCurrentConvId}                                              
        />)
       }
       </div>
     </Fragment>
   );
   }
- 
+
+}
 export default ConversationSearch;
 
 

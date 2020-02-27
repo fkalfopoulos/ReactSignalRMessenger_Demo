@@ -43,7 +43,7 @@ class Login extends React.Component {
        axios.post('https://localhost:44321/api/React/Validate', LoginViewModel).then((response) => 
        {
            console.log(response);     
-           console.log(response.data.activeUser.id);
+        
            localStorage.setItem('userId', response.data.activeUser.id)            
             this.props.history.push('/Messenger');
         })     

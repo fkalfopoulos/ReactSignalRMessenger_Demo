@@ -26,7 +26,6 @@ class  MessageList extends React.Component {
      componentDidMount = () => {               
      this.FetchMessages(this.state.query);
     }      
-
     getUsername = () => {
       return localStorage.getItem('username');
   }
@@ -42,7 +41,8 @@ class  MessageList extends React.Component {
     this.getConversations();
   }   
    ClearState = () => {
-    this.setState({messages:[]});   }    
+    this.setState({messages:[]}); 
+    }    
     
     ClearSearch = () => {
    this.setState({conversations:[]});
@@ -61,8 +61,8 @@ class  MessageList extends React.Component {
     
     FetchMessages = () => { 
     this.ClearState();        
-    let userId ={ userId : this.getId()
-    } 
+    let userId = { 
+      userId : this.getId() } 
     console.log(userId);
     axios.post(`https://localhost:44321/api/React/GetChat?=${this.state.query}`, userId).then((response) => {
       let tempMessage =  response.data.map(data => {
@@ -166,7 +166,7 @@ class  MessageList extends React.Component {
               <ToolbarButton key="add" icon="ion-ios-add-circle-outline" />
             ]}
           />
-          <ConversationSearch ClearSearch={this.ClearSearch} setCurrentConvId={this.setCurrentConvId} FetchData={this.FetchData} />
+          <ConversationSearch ClearSearch={this.ClearSearch} setCurrentConvId={this.setCurrentConvId} FetchData={this.FetchData}  getConversations={this.getConversations} />
           {
             this.state.conversations.map(conversation =>
               <ConversationListItem

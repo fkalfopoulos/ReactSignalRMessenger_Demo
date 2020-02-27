@@ -72,9 +72,7 @@ class Compose extends Component {
       senderName : response.data.senderName,
       
     }
-     
-      
-
+       
     this.state.connection.invoke('RegisterUser', this.getId()).catch(err => console.error(err));
       this.state.connection.invoke("SendMessage", msgViewModel.message, msgViewModel.receiverId,  msgViewModel.id, msgViewModel.senderId, msgViewModel.senderName)
       .catch(err => console.error(err));
